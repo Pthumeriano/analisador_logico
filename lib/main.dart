@@ -113,17 +113,63 @@ class _HomeState extends State<Home> {
     return abriu == fechou;
   }
 
-  bool validarPropoEconectivo(String s){
+  bool validarProposicaoEconectivo(String s){
     for(int i=0; i<s.length-1; i++){
-      if(s[i] == s[i+1]){
-        return false;
+      switch (s[i]) {
+        case 'P':
+          if(s[i+1]=='P' || s[i+1]=='Q' || s[i+1]=='R' || s[i+1]=='S'){
+            return false;
+          }
+          break;
+
+          case 'Q':
+          if(s[i+1]=='P' || s[i+1]=='Q' || s[i+1]=='R' || s[i+1]=='S'){
+            return false;
+          }
+          break;
+
+          case 'R':
+          if(s[i+1]=='P' || s[i+1]=='Q' || s[i+1]=='R' || s[i+1]=='S'){
+            return false;
+          }
+          break;
+
+          case 'S':
+          if(s[i+1]=='P' || s[i+1]=='Q' || s[i+1]=='R' || s[i+1]=='S'){
+            return false;
+          }
+          break;
+
+          case '^':
+          if(s[i+1]=='^' || s[i+1]=='v' || s[i+1]=='>' || s[i+1]=='§'){
+            return false;
+          }
+          break;
+
+          case 'v':
+          if(s[i+1]=='^' || s[i+1]=='v' || s[i+1]=='>' || s[i+1]=='§'){
+            return false;
+          }
+          break;
+
+          case '>':
+          if(s[i+1]=='^' || s[i+1]=='v' || s[i+1]=='>' || s[i+1]=='§'){
+            return false;
+          }
+          break;
+
+          case '§':
+          if(s[i+1]=='^' || s[i+1]=='v' || s[i+1]=='>' || s[i+1]=='§'){
+            return false;
+          }
       }
     }
+    if(s[s.length-1] == '^' || s[s.length-1] == 'v' || s[s.length-1] == '>' || s[s.length-1] == '§' || s[s.length-1] == '~') return false;
     return true;
   }
 
   bool validarTudo(String s){
-    return validarParentese(s) && validarPropoEconectivo(s);
+    return validarParentese(s) && validarProposicaoEconectivo(s);
   }
 
 
@@ -147,14 +193,14 @@ class _HomeState extends State<Home> {
 
   void analisar(){
     setState(() {
-     
+      if(!validarTudo(textEditingController.text))  return showAlertDialogErro(context, 'Formula mal formulada');
     });
   }
 
   void showAlertDialogErro(BuildContext context, String retorno){
   Widget ok = ElevatedButton(onPressed: () => {Navigator.of(context).pop()}, child: const Text('OK'), style: ElevatedButton.styleFrom(primary: Colors.red));
   AlertDialog alertDialog = AlertDialog(
-    title: Text(retorno),
+    title: Text(retorno,textAlign: TextAlign.center,),
     alignment: Alignment.center,
     actions: <Widget>[
       Column(mainAxisAlignment: MainAxisAlignment.center, 
