@@ -112,8 +112,20 @@ class _HomeState extends State<Home> {
     }
     return abriu == fechou;
   }
-  //^^^^^^^^ importante ^^^^^^^^^
-  //talvez nao seja usado da forma como está
+
+  bool validarPropoEconectivo(String s){
+    for(int i=0; i<s.length-1; i++){
+      if(s[i] == s[i+1]){
+        return false;
+      }
+    }
+    return true;
+  }
+
+  bool validarTudo(String s){
+    return validarParentese(s) && validarPropoEconectivo(s);
+  }
+
 
   bool calcularValorLogico(bool p, String conectivo, bool q){
 
@@ -131,6 +143,7 @@ class _HomeState extends State<Home> {
   bool negar(bool valorProposisao){
     return !valorProposisao;
   }
+  //^^^^^^^^^^ importante ^^^^^^^^^^
 
   void analisar(){
     setState(() {
