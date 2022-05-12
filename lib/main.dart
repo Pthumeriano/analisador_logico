@@ -99,18 +99,41 @@ class _HomeState extends State<Home> {
       textEditingController.text = textEditingController.text + ')';
     });
   }
+
+  String removerPrimeiro(String s){
+    String resultado = '';
+    for(int i=1; i<s.length; i++){
+      resultado = resultado + s[i];
+    }
+    return resultado;
+  }
+
+  String removerUltimo(String s){
+    String resultado = '';
+    for(int i=0; i<s.length-1; i++){
+      resultado = resultado + s[i];
+    }
+    return resultado;
+  }
+
   //vvvvvvv importante vvvvvvvv
   bool validarParentese(String s){
-    bool abriu = false;
-    bool fechou = false;
+    bool abriuEfechou = true;
     for(int i=0; i<s.length; i++){
-      if(s[i] == '('){
-        abriu = !abriu;
-      }else if(s[i] == ')'){
-        fechou = !fechou;
+      if(s[i] == '(' || s[i] == ')'){
+        abriuEfechou = !abriuEfechou;
       }
     }
-    return abriu == fechou;
+    return abriuEfechou;
+  }
+
+  bool validarParentese2(String s){
+    if(s[0] == ')') return false;
+    if(s[s.length-1] == '(') return false;
+    for(int i=0; i<s.length; i++){
+      
+    }
+    return true;
   }
 
   bool validarProposicaoEconectivo(String s){
