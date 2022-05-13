@@ -265,8 +265,8 @@ class _HomeState extends State<Home> {
         child: 
           Text('Resultado: '),
         ),
-        const Padding(padding: const EdgeInsets.all(20),
-          child: const Text('aaaaa'),
+        const Padding(padding: EdgeInsets.all(20),
+          child: Text('aaaaa'),
         ),
         pronto,
 
