@@ -117,23 +117,22 @@ class _HomeState extends State<Home> {
   }
 
   //vvvvvvv importante vvvvvvvv
+  String gerarParentese(String s){
+    String parenteses = '';
+    for(int i=0; i<s.length-1; i++){
+      if(s[i] == '(' || s[i] == ')'){parenteses += s[i];}
+    }
+    return parenteses;
+  }
+  
   bool validarParentese(String s){
     bool abriuEfechou = true;
-    for(int i=0; i<s.length; i++){
-      if(s[i] == '(' || s[i] == ')'){
-        abriuEfechou = !abriuEfechou;
-      }
+    if(gerarParentese(s).length.isOdd){return false;}
+    if(s[0] == ')' || s[s.length-1] == '('){return false;}
+    for(int i=1; i<s.length-1; i++){
+      if(s[i] == '(' || s[i] == ')'){abriuEfechou = !abriuEfechou;}
     }
     return abriuEfechou;
-  }
-
-  bool validarParentese2(String s){
-    if(s[0] == ')') return false;
-    if(s[s.length-1] == '(') return false;
-    for(int i=0; i<s.length; i++){
-      
-    }
-    return true;
   }
 
   bool validarProposicaoEconectivo(String s){
