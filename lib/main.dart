@@ -221,8 +221,7 @@ class _HomeState extends State<Home> {
     if(gerarParentese(s).isNotEmpty){return validarParentese(s) && validarProposicaoEconectivo(s);}
     return validarProposicaoEconectivo(s);
   }
-
-
+  
   bool calcularValorLogico(bool p, String conectivo, bool q){
 
     if(conectivo == 'v'){
