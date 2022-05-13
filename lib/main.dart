@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 void main(){
-  runApp(MaterialApp(home: Home()));
+  runApp(const MaterialApp(home: Home()));
 }
 
 
@@ -99,34 +99,129 @@ class _HomeState extends State<Home> {
       textEditingController.text = textEditingController.text + ')';
     });
   }
-  //vvvvvvv importante vvvvvvvv
-  bool validarParentese(String s){
-    bool abriu = false;
-    bool fechou = false;
-    for(int i=0; i<s.length; i++){
-      if(s[i] == '('){
-        abriu = !abriu;
-      }else if(s[i] == ')'){
-        fechou = !fechou;
-      }
+
+  String removerPrimeiro(String s){
+    String resultado = '';
+    for(int i=1; i<s.length; i++){
+      resultado = resultado + s[i];
     }
-    return abriu == fechou;
+    return resultado;
   }
 
-  bool validarPropoEconectivo(String s){
+  String removerUltimo(String s){
+    String resultado = '';
     for(int i=0; i<s.length-1; i++){
-      if(s[i] == s[i+1]){
-        return false;
+      resultado = resultado + s[i];
+    }
+    return resultado;
+  }
+
+  //vvvvvvv importante vvvvvvvv
+  String gerarParentese(String s){
+    String parenteses = '';
+    for(int i=0; i<s.length; i++){
+      if(s[i] == '(' || s[i] == ')'){parenteses += s[i];}
+    }
+    return parenteses;
+  }
+
+  String removerCaractereNaPosisao(String s, int posicao){
+    String resultante = '';
+    for(int i=0; i<s.length;i++){
+      if(i!=posicao){resultante+=s[i];}
+    }
+    return resultante;
+  }
+
+  int contarCaractere(String s, String c){
+    int contador = 0;
+    for(int i=0; i<s.length; i++){
+      if(s[i] == c){
+        contador++;
       }
     }
+    return contador;
+  }
+  
+  bool validarParentese(String s){
+    String parenteses = gerarParentese(s);
+    if((parenteses.length.isOdd)){return false;}
+    if(parenteses[0] == ')' || parenteses[parenteses.length-1] == '('){return false;}
+    for(int i=0; i<parenteses.length-2;i++){
+      if(parenteses[i] != parenteses[i+1]){
+        parenteses = removerCaractereNaPosisao(parenteses, i);
+        parenteses = removerCaractereNaPosisao(parenteses, i);
+        break;
+      }
+    }
+    for(int i=0; i<s.length-1;i++){
+      if(s[i] == ')' && s[i+1] == '('){return false;}
+      if(s[i] == '(' && s[i+1] == ')'){return false;}
+    }
+    if(contarCaractere(parenteses, '(') != contarCaractere(parenteses, ')')) return false;
+    return true;
+  }
+
+  bool validarProposicaoEconectivo(String s){
+    for(int i=0; i<s.length-1; i++){
+      switch (s[i]) {
+        case 'P':
+          if(s[i+1]=='P' || s[i+1]=='Q' || s[i+1]=='R' || s[i+1]=='S'){
+            return false;
+          }
+          break;
+
+          case 'Q':
+          if(s[i+1]=='P' || s[i+1]=='Q' || s[i+1]=='R' || s[i+1]=='S'){
+            return false;
+          }
+          break;
+
+          case 'R':
+          if(s[i+1]=='P' || s[i+1]=='Q' || s[i+1]=='R' || s[i+1]=='S'){
+            return false;
+          }
+          break;
+
+          case 'S':
+          if(s[i+1]=='P' || s[i+1]=='Q' || s[i+1]=='R' || s[i+1]=='S'){
+            return false;
+          }
+          break;
+
+          case '^':
+          if(s[i+1]=='^' || s[i+1]=='v' || s[i+1]=='>' || s[i+1]=='§'){
+            return false;
+          }
+          break;
+
+          case 'v':
+          if(s[i+1]=='^' || s[i+1]=='v' || s[i+1]=='>' || s[i+1]=='§'){
+            return false;
+          }
+          break;
+
+          case '>':
+          if(s[i+1]=='^' || s[i+1]=='v' || s[i+1]=='>' || s[i+1]=='§'){
+            return false;
+          }
+          break;
+
+          case '§':
+          if(s[i+1]=='^' || s[i+1]=='v' || s[i+1]=='>' || s[i+1]=='§'){
+            return false;
+          }
+      }
+    }
+    if(s[s.length-1] == '^' || s[s.length-1] == 'v' || s[s.length-1] == '>' || s[s.length-1] == '§' || s[s.length-1] == '~') return false;
     return true;
   }
 
   bool validarTudo(String s){
-    return validarParentese(s) && validarPropoEconectivo(s);
+    if(gerarParentese(s).isNotEmpty){return validarParentese(s) && validarProposicaoEconectivo(s);}
+    return validarProposicaoEconectivo(s);
   }
-
-
+  
   bool calcularValorLogico(bool p, String conectivo, bool q){
 
     if(conectivo == 'v'){
@@ -143,18 +238,22 @@ class _HomeState extends State<Home> {
   bool negar(bool valorProposisao){
     return !valorProposisao;
   }
-  //^^^^^^^^^ importante ^^^^^^^^
+  //^^^^^^^^^^ importante ^^^^^^^^^^
 
   void analisar(){
     setState(() {
-     
+      if(!validarTudo(textEditingController.text)){
+        showAlertDialogErro(context, 'Formula mal formulada');
+      }else{
+        showAlertDialog(context, textEditingController.text);
+      }
     });
   }
 
   void showAlertDialogErro(BuildContext context, String retorno){
   Widget ok = ElevatedButton(onPressed: () => {Navigator.of(context).pop()}, child: const Text('OK'), style: ElevatedButton.styleFrom(primary: Colors.red));
   AlertDialog alertDialog = AlertDialog(
-    title: Text(retorno),
+    title: Text(retorno,textAlign: TextAlign.center,),
     alignment: Alignment.center,
     actions: <Widget>[
       Column(mainAxisAlignment: MainAxisAlignment.center, 
@@ -170,16 +269,18 @@ class _HomeState extends State<Home> {
   Widget pronto = ElevatedButton(onPressed: () => {Navigator.of(context).pop()}, child: const Text('Pronto'), style: ElevatedButton.styleFrom(primary: Colors.green));
   AlertDialog alertDialog = AlertDialog(
     title: Text(retorno),
+    actionsAlignment: MainAxisAlignment.center,
     alignment: Alignment.center,
     actions: <Widget>[
-      Column(mainAxisAlignment: MainAxisAlignment.center, 
+      Column(
+      mainAxisAlignment: MainAxisAlignment.center, 
       children: [
-        Row(
-          children: [
-            const Text('|P| '),
-            const Text(' |Q|'),
-            Text("  |"+textEditingController.text+"| ")
-          ],
+        const Padding(padding: EdgeInsets.all(20),
+        child: 
+          Text('Resultado: '),
+        ),
+        const Padding(padding: EdgeInsets.all(20),
+          child: Text('aaaaa'),
         ),
         pronto,
 
@@ -189,7 +290,6 @@ class _HomeState extends State<Home> {
   showDialog(context: context, builder: (BuildContext context){return alertDialog;});
 }
   
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
