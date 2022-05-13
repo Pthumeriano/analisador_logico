@@ -132,18 +132,30 @@ class _HomeState extends State<Home> {
     }
     return resultante;
   }
+
+  int contarCaractere(String s, String c){
+    int contador = 0;
+    for(int i=0; i<s.length; i++){
+      if(s[i] == c){
+        contador++;
+      }
+    }
+    return contador;
+  }
   
   bool validarParentese(String s){
     String parenteses = gerarParentese(s);
     if((parenteses.length.isOdd)){return false;}
     if(parenteses[0] == ')' || parenteses[parenteses.length-1] == '('){return false;}
-    for(int i=0; i<parenteses.length-2; i++){
+    int i=0;
+    for(int i=0; i<parenteses.length-2;i++){
       if(parenteses[i] != parenteses[i+1]){
         parenteses = removerCaractereNaPosisao(parenteses, i);
         parenteses = removerCaractereNaPosisao(parenteses, i);
-        if(parenteses[0] == ')' || parenteses[parenteses.length-1] == '('){return false;}
+        break;
       }
     }
+    if(contarCaractere(parenteses, '(') != contarCaractere(parenteses, ')')) return false;
     return true;
   }
 
