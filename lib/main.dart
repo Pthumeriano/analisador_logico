@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 void main(){
-  runApp(MaterialApp(home: Home()));
+  runApp(const MaterialApp(home: Home()));
 }
 
 
@@ -117,21 +117,32 @@ class _HomeState extends State<Home> {
   }
 
   //vvvvvvv importante vvvvvvvv
-  bool validarParentese(String s){
-    bool abriuEfechou = true;
+  String gerarParentese(String s){
+    String parenteses = '';
     for(int i=0; i<s.length; i++){
-      if(s[i] == '(' || s[i] == ')'){
-        abriuEfechou = !abriuEfechou;
-      }
+      if(s[i] == '(' || s[i] == ')'){parenteses += s[i];}
     }
-    return abriuEfechou;
+    return parenteses;
   }
 
-  bool validarParentese2(String s){
-    if(s[0] == ')') return false;
-    if(s[s.length-1] == '(') return false;
-    for(int i=0; i<s.length; i++){
-      
+  String removerCaractereNaPosisao(String s, int posicao){
+    String resultante = '';
+    for(int i=0; i<s.length;i++){
+      if(i!=posicao){resultante+=s[i];}
+    }
+    return resultante;
+  }
+  
+  bool validarParentese(String s){
+    String parenteses = gerarParentese(s);
+    if((parenteses.length.isOdd)){return false;}
+    if(parenteses[0] == ')' || parenteses[parenteses.length-1] == '('){return false;}
+    for(int i=0; i<parenteses.length-2; i++){
+      if(parenteses[i] != parenteses[i+1]){
+        parenteses = removerCaractereNaPosisao(parenteses, i);
+        parenteses = removerCaractereNaPosisao(parenteses, i);
+        if(parenteses[0] == ')' || parenteses[parenteses.length-1] == '('){return false;}
+      }
     }
     return true;
   }
@@ -192,7 +203,8 @@ class _HomeState extends State<Home> {
   }
 
   bool validarTudo(String s){
-    return validarParentese(s) && validarProposicaoEconectivo(s);
+    if(gerarParentese(s).isNotEmpty){return validarParentese(s) && validarProposicaoEconectivo(s);}
+    return validarProposicaoEconectivo(s);
   }
 
 
@@ -216,7 +228,11 @@ class _HomeState extends State<Home> {
 
   void analisar(){
     setState(() {
-      if(!validarTudo(textEditingController.text))  return showAlertDialogErro(context, 'Formula mal formulada');
+      if(!validarTudo(textEditingController.text)){
+        showAlertDialogErro(context, 'Formula mal formulada');
+      }else{
+        showAlertDialog(context, textEditingController.text);
+      }
     });
   }
 
@@ -239,16 +255,18 @@ class _HomeState extends State<Home> {
   Widget pronto = ElevatedButton(onPressed: () => {Navigator.of(context).pop()}, child: const Text('Pronto'), style: ElevatedButton.styleFrom(primary: Colors.green));
   AlertDialog alertDialog = AlertDialog(
     title: Text(retorno),
+    actionsAlignment: MainAxisAlignment.center,
     alignment: Alignment.center,
     actions: <Widget>[
-      Column(mainAxisAlignment: MainAxisAlignment.center, 
+      Column(
+      mainAxisAlignment: MainAxisAlignment.center, 
       children: [
-        Row(
-          children: [
-            const Text('|P| '),
-            const Text(' |Q|'),
-            Text("  |"+textEditingController.text+"| ")
-          ],
+        const Padding(padding: EdgeInsets.all(20),
+        child: 
+          Text('Resultado: '),
+        ),
+        const Padding(padding: const EdgeInsets.all(20),
+          child: const Text('aaaaa'),
         ),
         pronto,
 
@@ -258,7 +276,6 @@ class _HomeState extends State<Home> {
   showDialog(context: context, builder: (BuildContext context){return alertDialog;});
 }
   
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
