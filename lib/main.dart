@@ -155,7 +155,6 @@ class _HomeState extends State<Home> {
       }
     }
     for(int i=0; i<s.length-1;i++){
-      print(s[i]);
       if(s[i] == ')' && s[i+1] == '('){return false;}
       if(s[i] == '(' && s[i+1] == ')'){return false;}
     }
