@@ -1,0 +1,337 @@
+ String gerarParentese(String s) {
+    String parenteses = '';
+    for (int i = 0; i < s.length; i++) {
+      if (s[i] == '(' || s[i] == ')') {
+        parenteses += s[i];
+      }
+    }
+    return parenteses;
+  }
+
+String removerCaractereNaPosisao(String s, int posicao) {
+    String resultante = '';
+    for (int i = 0; i < s.length; i++) {
+      if (i != posicao) {
+        resultante += s[i];
+      }
+    }
+    return resultante;
+  }
+
+
+int contarConectivos(String s){
+    int contador = 0;
+
+    for(int i=0; i<s.length; i++){
+      if(s[i] == 'v' || s[i] == '^' || s[i] == '>' || s[i] == '§'){
+        contador++;
+      }
+    }
+
+    return contador;
+  }
+
+int contarCaractere(String s, String c) {
+    int contador = 0;
+    for (int i = 0; i < s.length; i++) {
+      if (s[i] == c) {
+        contador++;
+      }
+    }
+    return contador;
+  } 
+
+bool validarParentese(String s) {
+    String parenteses = gerarParentese(s);
+    if ((parenteses.length.isOdd)) {
+      return false;
+    }
+    if (parenteses[0] == ')' || parenteses[parenteses.length - 1] == '(') {
+      return false;
+    }
+    for (int i = 0; i < parenteses.length - 2; i++) {
+      if (parenteses[i] != parenteses[i + 1]) {
+        parenteses = removerCaractereNaPosisao(parenteses, i);
+        parenteses = removerCaractereNaPosisao(parenteses, i);
+        break;
+      }
+    }
+    for (int i = 0; i < s.length - 1; i++) {
+      if (s[i] == ')' && s[i + 1] == '(') {
+        return false;
+      }
+      if (s[i] == '(' && s[i + 1] == ')') {
+        return false;
+      }
+    }
+    if (contarCaractere(parenteses, '(') != contarCaractere(parenteses, ')')){
+      return false;
+    }
+      
+    return true;
+  }
+
+bool validarProposicaoEconectivo(String s) {
+    for (int i = 0; i < s.length - 1; i++) {
+      switch (s[i]) {
+        case 'V':
+          if (s[i + 1] == 'V' || s[i+1] == 'F'){
+            return false;
+          }
+          break;
+
+        case 'F':
+          if (s[i + 1] == 'V' || s[i+1] == 'F'){
+            return false;
+          }
+          break;
+
+        case 'P':
+          if (s[i + 1] == 'P' ||
+              s[i + 1] == 'Q' ||
+              s[i + 1] == 'R' ||
+              s[i + 1] == 'S') {
+            return false;
+          }
+          break;
+
+        case 'Q':
+          if (s[i + 1] == 'P' ||
+              s[i + 1] == 'Q' ||
+              s[i + 1] == 'R' ||
+              s[i + 1] == 'S') {
+            return false;
+          }
+          break;
+
+        case 'R':
+          if (s[i + 1] == 'P' ||
+              s[i + 1] == 'Q' ||
+              s[i + 1] == 'R' ||
+              s[i + 1] == 'S') {
+            return false;
+          }
+          break;
+
+        case 'S':
+          if (s[i + 1] == 'P' ||
+              s[i + 1] == 'Q' ||
+              s[i + 1] == 'R' ||
+              s[i + 1] == 'S') {
+            return false;
+          }
+          break;
+
+        case '^':
+          if (s[i + 1] == '^' ||
+              s[i + 1] == 'v' ||
+              s[i + 1] == '>' ||
+              s[i + 1] == '§') {
+            return false;
+          }
+          break;
+
+        case 'v':
+          if (s[i + 1] == '^' ||
+              s[i + 1] == 'v' ||
+              s[i + 1] == '>' ||
+              s[i + 1] == '§') {
+            return false;
+          }
+          break;
+
+        case '>':
+          if (s[i + 1] == '^' ||
+              s[i + 1] == 'v' ||
+              s[i + 1] == '>' ||
+              s[i + 1] == '§') {
+            return false;
+          }
+          break;
+
+        case '§':
+          if (s[i + 1] == '^' ||
+              s[i + 1] == 'v' ||
+              s[i + 1] == '>' ||
+              s[i + 1] == '§') {
+            return false;
+          }
+      }
+    }
+    if (s[s.length - 1] == '^' ||
+        s[s.length - 1] == 'v' ||
+        s[s.length - 1] == '>' ||
+        s[s.length - 1] == '§' ||
+        s[s.length - 1] == '~') return false;
+    return true;
+  }
+
+bool validarTudo(String s) {
+    if (gerarParentese(s).isNotEmpty) {
+      return validarParentese(s) && validarProposicaoEconectivo(s);
+    }
+    return validarProposicaoEconectivo(s);
+  }
+
+bool calcularProposisao(String p){
+    if(p == 'V'){return true;}
+    return false;
+  }
+
+bool calcularValorLogico(bool p, String conectivo, bool q){
+    if (conectivo == 'v') {
+      return (p || q);
+    } else if (conectivo == '>') {
+      return (!p || q);
+    } else if (conectivo == '§') {
+      return ((!p || q) && (!q || p));
+    }
+    return p && q;
+  }
+
+String eliminarRestoParenteses(String s) {
+    String expressao = s;
+    
+    if(expressao[0] == '(' && expressao[1] != '('){
+      expressao = removerCaractereNaPosisao(expressao, 0);
+      return expressao;
+    }
+  
+    while(expressao[0] == '('){
+      expressao = removerCaractereNaPosisao(expressao,0);
+    }
+  
+    for(int i=0; i<expressao.length-1;i++){
+      if(expressao[i] == '(' && expressao[i+1] == ')'){
+        expressao = removerCaractereNaPosisao(expressao, i);
+        expressao = removerCaractereNaPosisao(expressao, i);
+        return expressao;
+      }else if(expressao[i] == ')'){
+        expressao = removerCaractereNaPosisao(expressao,i);
+      }
+    }
+    
+    return expressao;
+  }
+
+
+String getEntreParentese(String s){
+  String expressao = '';
+  if(!s.contains(')')){
+    return s;
+  }
+  
+  for(int i=0; i<s.length-2; i++){
+    if(s[i] == '('){
+      for(int j=i+1; j<s.length-1; j++){
+        if(s[j] == '('){
+          expressao = '';
+          break;
+        }else if(s[j] == ')'){
+          return expressao;
+        }else{
+          expressao += s[j];
+        }
+      }
+      
+    }
+  }
+  
+  return expressao;
+}
+
+String removerEntreParentese(String s){
+  if(!s.contains('(')){
+    return s;
+  }
+  
+  String resultado = '';
+  
+  int deTanto = 0;
+  int aTanto = 0;
+  bool fechou = false;
+  
+  if(s[0] != '('){
+    for(int i=0; i<s.length-1; i++){
+      if(s[i] != '('){
+        resultado += s[i];
+      }else{
+        break;
+      }
+    }
+  }else{
+    for(int i=0; i<s.length-2; i++){
+    if(s[i] == '('){
+      for(int j=i+1; j<s.length-1; j++){
+        if(s[j] == '('){
+          deTanto = i;
+          break;
+        }else if(s[j] == ')'){
+          aTanto = j;
+          fechou = true;
+          break;
+        }
+      }
+    }
+    if(fechou){
+      break;
+    }
+  }
+  if(fechou){
+    for(int i=0; i<s.length;i++){
+    if((i <= deTanto || i >aTanto)){
+      resultado += s[i];
+      }
+    }
+  }  
+ }
+  
+  return resultado;
+}
+
+ String normalizar(String s){
+    String normalizada = s;
+    return normalizada;
+  }
+
+
+bool resolver(String s){
+  
+  List<bool> valoresPendentes = [];
+  List<String> conectivosPendentes = [];
+  
+  bool resultado = true;
+  String expressao = s;
+  int repeticoes = contarConectivos(expressao);
+  while(repeticoes != 0){
+    
+    String interna = getEntreParentese(expressao);
+    interna = normalizar(expressao);
+    
+    if(interna[1] == 'v' || interna[1] == '^' || interna[1] == '>' || interna[1] == '§'){
+      conectivosPendentes.add(interna[1]);
+      interna = removerCaractereNaPosisao(interna,0);
+      interna = removerCaractereNaPosisao(interna,0);
+      interna = removerCaractereNaPosisao(interna,0);
+    }else if(interna.length == 3){
+      valoresPendentes.add(calcularProposisao(interna[1]));
+    }else{
+      valoresPendentes.add(calcularValorLogico(calcularProposisao(interna[1]), interna[2], calcularProposisao(interna[3])));
+    }
+      
+    expressao = removerEntreParentese(expressao);
+    expressao = normalizar(expressao);
+    
+    repeticoes--;
+  }
+  
+  
+  return resultado;
+}
+
+void main(){
+  String expressao = '(VvF)';
+  print('Expressao: $expressao');
+  print(resolver(expressao));
+  
+}
