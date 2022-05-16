@@ -147,6 +147,18 @@ class _HomeState extends State<Home> {
     return resultante;
   }
 
+  int contarConectivos(String s){
+    int contador = 0;
+
+    for(int i=0; i<s.length; i++){
+      if(s[i] == 'v' || s[i] == '^' || s[i] == '>' || s[i] == '§'){
+        contador++;
+      }
+    }
+
+    return contador;
+  }
+
   int contarCaractere(String s, String c) {
     int contador = 0;
     for (int i = 0; i < s.length; i++) {
@@ -299,13 +311,13 @@ class _HomeState extends State<Home> {
     return false;
   }
 
-  bool calcularValorLogico(bool p, String conectivo, bool q, bool negacao) {
+  bool calcularValorLogico(bool p, String conectivo, bool q){
     if (conectivo == 'v') {
-      return (p || q) && negacao;
+      return (p || q);
     } else if (conectivo == '>') {
-      return (!p || q) && negacao;
+      return (!p || q);
     } else if (conectivo == '§') {
-      return (((!p || q) && (!q || p)) && negacao);
+      return ((!p || q) && (!q || p));
     }
     return p && q;
   }
@@ -362,17 +374,27 @@ class _HomeState extends State<Home> {
 
 String eliminarRestoParenteses(String s) {
     String expressao = s;
+    
+    if(expressao[0] == '(' && expressao[1] != '('){
+      expressao = removerCaractereNaPosisao(expressao, 0);
+      return expressao;
+    }
+  
+    while(expressao[0] == '('){
+      expressao = removerCaractereNaPosisao(expressao,0);
+    }
   
     for(int i=0; i<expressao.length-1;i++){
       if(expressao[i] == '(' && expressao[i+1] == ')'){
         expressao = removerCaractereNaPosisao(expressao, i);
         expressao = removerCaractereNaPosisao(expressao, i);
         return expressao;
+      }else if(expressao[i] == ')'){
+        expressao = removerCaractereNaPosisao(expressao,i);
       }
     }
     
     return expressao;
-        
   }
 
 String arrumarProposicao(String aux){
@@ -387,6 +409,9 @@ String arrumarProposicao(String aux){
 
 String getEntreParentese(String s){
   String expressao = '';
+  if(!s.contains(')')){
+    return s;
+  }
   
   for(int i=0; i<s.length-2; i++){
     if(s[i] == '('){
@@ -395,11 +420,12 @@ String getEntreParentese(String s){
           expressao = '';
           break;
         }else if(s[j] == ')'){
-          break;
+          return expressao;
         }else{
           expressao += s[j];
         }
       }
+      
     }
   }
   
@@ -424,8 +450,18 @@ String removerEntreParentese(String s){
   
   int deTanto = 0;
   int aTanto = 0;
+  bool fechou = false;
   
-  for(int i=0; i<s.length-2; i++){
+  if(s[0] != '('){
+    for(int i=0; i<s.length-1; i++){
+      if(s[i] != '('){
+        resultado += s[i];
+      }else{
+        break;
+      }
+    }
+  }else{
+    for(int i=0; i<s.length-2; i++){
     if(s[i] == '('){
       for(int j=i+1; j<s.length-1; j++){
         if(s[j] == '('){
@@ -433,26 +469,59 @@ String removerEntreParentese(String s){
           break;
         }else if(s[j] == ')'){
           aTanto = j;
+          fechou = true;
           break;
         }
       }
     }
-  }
-  
-  for(int i=0; i<s.length;i++){
-    if((i <= deTanto || i >aTanto)){
-      resultado += s[i];
+    if(fechou){
+      break;
     }
   }
+  if(fechou){
+    for(int i=0; i<s.length;i++){
+    if((i <= deTanto || i >aTanto)){
+      resultado += s[i];
+      }
+    }
+  }  
+ }
+  
   return resultado;
 }
 
-  bool resolver(String s){
+bool resolver(String s){
+  
+  List<bool> valoresPendentes = [];
+  List<String> conectivosPendentes = [];
   
   bool resultado = true;
   String expressao = s;
+  int repeticoes = contarConectivos(expressao);
+  while(repeticoes != 0){
+    
+    String interna = getEntreParentese(expressao);
+    interna = normalizar(expressao);
+    
+    if(interna[1] == 'v' || interna[1] == '^' || interna[1] == '>' || interna[1] == '§'){
+      conectivosPendentes.add(interna[1]);
+      interna = removerCaractereNaPosisao(interna,0);
+      interna = removerCaractereNaPosisao(interna,0);
+      interna = removerCaractereNaPosisao(interna,0);
+    }else if(interna.length == 3){
+      valoresPendentes.add(calcularProposisao(interna[1]));
+    }else{
+      valoresPendentes.add(calcularValorLogico(calcularProposisao(interna[1]), interna[2], calcularProposisao(interna[3])));
+    }
+      
+    expressao = removerEntreParentese(expressao);
+    expressao = normalizar(expressao);
+    
+    repeticoes--;
+  }
   
-  return resultado;
+  
+  return valoresPendentes[0];
 }
   //^^^^^^^^^^ importante ^^^^^^^^^^
 
