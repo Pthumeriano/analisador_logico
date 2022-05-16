@@ -297,82 +297,42 @@ String removerEntreParentese(String s){
 
 bool resolver(String s){
   
+  bool resultado = true;
+  
   List<bool> valoresPendentes = [];
   List<String> conectivosPendentes = [];
   
-  bool resultado = true;
-  String expressao = s;
-  int repeticoes = contarConectivos(expressao);
-  while(repeticoes != 0){
+  String expressaoNormalizada = normalizar(s);
     
-    String interna = getEntreParentese(expressao);
-    interna = normalizar(expressao);
-    
-    if(interna[1] == 'v' || interna[1] == '^' || interna[1] == '>' || interna[1] == '§'){
-      conectivosPendentes.add(interna[1]);
-      interna = removerCaractereNaPosisao(interna,0);
-      interna = removerCaractereNaPosisao(interna,0);
-      interna = removerCaractereNaPosisao(interna,0);
-    }else if(interna.length == 3){
-      valoresPendentes.add(calcularProposisao(interna[1]));
-    }else{
-      valoresPendentes.add(calcularValorLogico(calcularProposisao(interna[1]), interna[2], calcularProposisao(interna[3])));
+  while(expressaoNormalizada.isNotEmpty){
+    String expressaoComPrioridade = getEntreParentese(expressaoNormalizada);
+    switch(expressaoComPrioridade[1]){
+      case '§':
+        valoresPendentes.add(calcularValorLogico(calcularProposisao(expressaoComPrioridade[0]),'§',calcularProposisao(expressaoComPrioridade[2])));
+        break;
+        
+      case '>':
+          valoresPendentes.add(calcularValorLogico(calcularProposisao(expressaoComPrioridade[0]),'>',calcularProposisao(expressaoComPrioridade[2])));
+       break;
+        
+      case 'v':
+          valoresPendentes.add(calcularValorLogico(calcularProposisao(expressaoComPrioridade[0]),'v',calcularProposisao(expressaoComPrioridade[2])));
+       break;
+      
+      case '^':
+          valoresPendentes.add(calcularValorLogico(calcularProposisao(expressaoComPrioridade[0]),'^',calcularProposisao(expressaoComPrioridade[2])));
+        break;
     }
-    
-    expressao = removerEntreParentese(expressao);
-    expressao = normalizar(expressao);
-    
-    repeticoes--;
+    expressaoNormalizada = removerEntreParentese(expressaoNormalizada);
+    expressaoNormalizada = normalizar(expressaoNormalizada);
   }
   
-  while(conectivosPendentes.isNotEmpty){
-    switch (conectivosPendentes.last){
-      case '>':
-          bool ultimo = valoresPendentes.last;
-          valoresPendentes.removeLast();
-          bool penultimo = valoresPendentes.last;
-          valoresPendentes.removeLast();
-          resultado = calcularValorLogico(penultimo, '>',ultimo);
-          conectivosPendentes.removeLast();
-          valoresPendentes.removeLast();
-        break;
-        
-        case '§':  
-         bool ultimo = valoresPendentes.last;
-          valoresPendentes.removeLast();
-          bool penultimo = valoresPendentes.last;
-          valoresPendentes.removeLast();
-          resultado = calcularValorLogico(penultimo,'§',ultimo);
-          conectivosPendentes.removeLast();
-          valoresPendentes.removeLast();
-        break;
-        
-        case 'v':
-          bool ultimo = valoresPendentes.last;
-          valoresPendentes.removeLast();
-          bool penultimo = valoresPendentes.last;
-          valoresPendentes.removeLast();
-          resultado = calcularValorLogico(penultimo, 'v',ultimo);
-          conectivosPendentes.removeLast();
-          valoresPendentes.removeLast();
-        break;
-        
-        case '^':
-           bool ultimo = valoresPendentes.last;
-          valoresPendentes.removeLast();
-          bool penultimo = valoresPendentes.last;
-          valoresPendentes.removeLast();
-          resultado = calcularValorLogico(penultimo, '^',ultimo);
-          conectivosPendentes.removeLast();
-          valoresPendentes.removeLast();
-    }
-  }
-  return resultado;
+  return valoresPendentes[0];
 }
 
 void main(){
-  String expressao = '(V>F)';
-  print('Expressao: $expressao');
+  String expressao = '(V>V)';
   print(resolver(expressao));
+  
   
 }
