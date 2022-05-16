@@ -318,19 +318,60 @@ bool resolver(String s){
     }else{
       valoresPendentes.add(calcularValorLogico(calcularProposisao(interna[1]), interna[2], calcularProposisao(interna[3])));
     }
-      
+    
     expressao = removerEntreParentese(expressao);
     expressao = normalizar(expressao);
     
     repeticoes--;
   }
   
-  
+  while(conectivosPendentes.isNotEmpty){
+    switch (conectivosPendentes.last){
+      case '>':
+          bool ultimo = valoresPendentes.last;
+          valoresPendentes.removeLast();
+          bool penultimo = valoresPendentes.last;
+          valoresPendentes.removeLast();
+          resultado = calcularValorLogico(penultimo, '>',ultimo);
+          conectivosPendentes.removeLast();
+          valoresPendentes.removeLast();
+        break;
+        
+        case '§':  
+         bool ultimo = valoresPendentes.last;
+          valoresPendentes.removeLast();
+          bool penultimo = valoresPendentes.last;
+          valoresPendentes.removeLast();
+          resultado = calcularValorLogico(penultimo,'§',ultimo);
+          conectivosPendentes.removeLast();
+          valoresPendentes.removeLast();
+        break;
+        
+        case 'v':
+          bool ultimo = valoresPendentes.last;
+          valoresPendentes.removeLast();
+          bool penultimo = valoresPendentes.last;
+          valoresPendentes.removeLast();
+          resultado = calcularValorLogico(penultimo, 'v',ultimo);
+          conectivosPendentes.removeLast();
+          valoresPendentes.removeLast();
+        break;
+        
+        case '^':
+           bool ultimo = valoresPendentes.last;
+          valoresPendentes.removeLast();
+          bool penultimo = valoresPendentes.last;
+          valoresPendentes.removeLast();
+          resultado = calcularValorLogico(penultimo, '^',ultimo);
+          conectivosPendentes.removeLast();
+          valoresPendentes.removeLast();
+    }
+  }
   return resultado;
 }
 
 void main(){
-  String expressao = '(VvF)';
+  String expressao = '(V>F)';
   print('Expressao: $expressao');
   print(resolver(expressao));
   
