@@ -322,32 +322,6 @@ class _HomeState extends State<Home> {
     return p && q;
   }
 
-  bool resolverExpressao(String s){
-    bool negado = true;
-    bool resultado = false;
-    List<bool> resultadoTemporario = [];
-
-    for(int i=1; i<s.length-1; i++){
-      if(s[i] == '^' || s[i] == 'v' || s[i] == '>' || s[i] == '§'){
-        if(s[i-1] == 'F' && s[i+1] == 'F'){
-
-        }else if(s[i-1] == 'F' && s[i+1] == 'V'){
-          
-        }else if(s[i-1] == 'V' && s[i+1] == 'F'){
-
-        }else if(s[i-1] == 'V' && s[i+1] == 'V'){
-
-        }
-      }
-    }
-
-    return resultado;
-  }
-
-  bool negar(bool valorProposisao) {
-    return !valorProposisao;
-  }
-
   bool reduzirNegacao(String s) {
     bool controle = true;
     for (int i = 0; i < s.length - 3; i++) {
@@ -490,38 +464,87 @@ String removerEntreParentese(String s){
   return resultado;
 }
 
-bool resolver(String s){
+List<String> separador(String s){
+  List<String> expressao = [];
   
-  List<bool> valoresPendentes = [];
-  List<String> conectivosPendentes = [];
+  String expressaoAtual = s;
   
-  bool resultado = true;
-  String expressao = s;
-  int repeticoes = contarConectivos(expressao);
-  while(repeticoes != 0){
+  while(expressaoAtual.isNotEmpty){
     
-    String interna = getEntreParentese(expressao);
-    interna = normalizar(expressao);
+    String expressaoAuxiliar = getEntreParentese(expressaoAtual);
+    expressaoAuxiliar = eliminarRestoParenteses(expressaoAuxiliar);
     
-    if(interna[1] == 'v' || interna[1] == '^' || interna[1] == '>' || interna[1] == '§'){
-      conectivosPendentes.add(interna[1]);
-      interna = removerCaractereNaPosisao(interna,0);
-      interna = removerCaractereNaPosisao(interna,0);
-      interna = removerCaractereNaPosisao(interna,0);
-    }else if(interna.length == 3){
-      valoresPendentes.add(calcularProposisao(interna[1]));
-    }else{
-      valoresPendentes.add(calcularValorLogico(calcularProposisao(interna[1]), interna[2], calcularProposisao(interna[3])));
+    expressao.add(expressaoAuxiliar);
+    
+    expressaoAtual = removerEntreParentese(expressaoAtual);
+    
+  }
+  return expressao;
+}
+
+List<String> getConectivosSobrando(String s){
+  List<String> conectivos = [];
+  
+  for(int i=0; i<s.length-1; i++){
+    if((s[i] == '>' || s[i] == 'v' || s[i] == '§' || s[i] == '>' || s[i] == '^') && s[i+1] == '('){
+      conectivos.add(s[i]);
     }
-      
-    expressao = removerEntreParentese(expressao);
-    expressao = normalizar(expressao);
-    
-    repeticoes--;
   }
   
+  return conectivos;
+}
+
+String deixarEmPontoDeBala(String expressao){
   
-  return valoresPendentes[0];
+  List<String> expressoesEmPontoDeBala = separador(expressao);
+  List<String> conectivosEmPontoBala = getConectivosSobrando(expressao);
+  
+  List<bool> solucoes = [];
+  
+  for(int i=0; i<expressoesEmPontoDeBala.length;i++){
+    String p = expressoesEmPontoDeBala[i];
+      
+    if(!(p.contains('>') || p.contains('v') || p.contains('>') || p.contains('§'))){
+      solucoes.add(calcularProposisao(p[0]));
+    }else{
+      solucoes.add(calcularValorLogico(calcularProposisao(p[0]),p[1],calcularProposisao(p[2])));  
+    }
+    
+  }
+  
+  String expressaoEmPontoDeBala = '';
+  
+  while(solucoes.isNotEmpty){
+    if(solucoes[0]){
+       expressaoEmPontoDeBala += 'V';
+    }else{
+       expressaoEmPontoDeBala += 'F';
+    }
+    
+    if(conectivosEmPontoBala.isNotEmpty){
+      expressaoEmPontoDeBala += conectivosEmPontoBala[0];
+      conectivosEmPontoBala.removeAt(0);
+    }
+    
+    solucoes.removeAt(0);
+  }
+    
+  return expressaoEmPontoDeBala;
+}
+
+bool mandarBala(String s){
+  String expressao = deixarEmPontoDeBala(s);
+  bool bala = calcularProposisao(expressao[0]);
+  
+  expressao = removerCaractereNaPosisao(expressao,0);
+  
+  while(expressao.isNotEmpty){
+    bala = calcularValorLogico(bala, expressao[0],calcularProposisao(expressao[1]));
+    expressao = removerCaractereNaPosisao(expressao,0);
+    expressao = removerCaractereNaPosisao(expressao,0);
+  }
+  
+  return bala;
 }
   //^^^^^^^^^^ importante ^^^^^^^^^^
 
@@ -567,7 +590,7 @@ bool resolver(String s){
   void showAlertDialog(BuildContext context, String retorno) {
     String expressao = textEditingController.text;
     String resultadoEmString = '';
-    if(resolver(expressao)){
+    if(mandarBala(expressao)){
       resultadoEmString = 'VERDADEIRO';
     }else{
       resultadoEmString = 'FALSO';
@@ -590,7 +613,7 @@ bool resolver(String s){
                 child: Text('Resultado: '),
               ),
               Padding(
-                padding: EdgeInsets.all(20),
+                padding: const EdgeInsets.all(20),
                 child: Column(children: [
                   Text(resultadoEmString),
                 ]),
