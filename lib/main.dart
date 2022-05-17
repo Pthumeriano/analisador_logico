@@ -495,6 +495,9 @@ List<String> getConectivosSobrando(String s){
 }
 
 String deixarEmPontoDeBala(String expressao){
+  //resolver entre parentese e adicionar resultados numa lista
+  //adicionar conectivos que sobram em uma lista
+  //concatena tudo em ordem numa string e retorna
   
   List<String> expressoesEmPontoDeBala = separador(expressao);
   List<String> conectivosEmPontoBala = getConectivosSobrando(expressao);
@@ -533,8 +536,9 @@ String deixarEmPontoDeBala(String expressao){
 }
 
 bool mandarBala(String s){
-  bool bala = calcularProposisao(s[0]);
-  String expressao = s;
+  //resolver expressao em ordem de ocorrencia
+  String expressao = deixarEmPontoDeBala(s);
+  bool bala = calcularProposisao(expressao[0]);
   
   expressao = removerCaractereNaPosisao(expressao,0);
   
@@ -701,11 +705,6 @@ bool mandarBala(String s){
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              ElevatedButton(
-                child: const Text('~'),
-                onPressed: escreverNao,
-                style: ElevatedButton.styleFrom(primary: Colors.black),
-              ),
               ElevatedButton(
                 child: const Text('('),
                 onPressed: escreverAbreParentese,
