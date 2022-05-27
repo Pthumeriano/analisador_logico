@@ -170,6 +170,9 @@ class _HomeState extends State<Home> {
   }
 
   bool validarParentese(String s) {
+    
+    s=gerarParentese(s);
+    
     if(s=='') return true;
   
     if ((s.length.isOdd)) {
