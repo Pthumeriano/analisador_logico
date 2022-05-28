@@ -170,42 +170,132 @@ class _HomeState extends State<Home> {
   }
 
   bool validarParentese(String s) {
-    
-    s=gerarParentese(s);
-    
-    if(s=='') return true;
-  
-    if ((s.length.isOdd)) {
+    String parenteses = gerarParentese(s);
+    if ((parenteses.length.isOdd)) {
       return false;
     }
-    for (int i = 0; i < s.length - 2; i++) {
-      if (s[i] != s[i + 1]) {
-        s = removerCaractereNaPosisao(s, i);
-        s = removerCaractereNaPosisao(s, i);
+    if (parenteses[0] == ')' || parenteses[parenteses.length - 1] == '(') {
+      return false;
+    }
+    for (int i = 0; i < parenteses.length - 2; i++) {
+      if (parenteses[i] != parenteses[i + 1]) {
+        parenteses = removerCaractereNaPosisao(parenteses, i);
+        parenteses = removerCaractereNaPosisao(parenteses, i);
         break;
       }
     }
-    if (contarCaractere(s, '(') != contarCaractere(s, ')')){
-      return false;
+    for (int i = 0; i < s.length - 1; i++) {
+      if (s[i] == ')' && s[i + 1] == '(') {
+        return false;
+      }
+      if (s[i] == '(' && s[i + 1] == ')') {
+        return false;
+      }
     }
-  
-    if (s[0] == ')' || s[s.length - 1] == '(') {
+    if (contarCaractere(parenteses, '(') != contarCaractere(parenteses, ')')){
       return false;
     }
       
     return true;
   }
 
- bool validarProposicaoEconectivo(String s) {
+  String normalizar(String s){
+    String normalizada = '';
+    return normalizada;
+  }
+
+  bool validarProposicaoEconectivo(String s) {
     for (int i = 0; i < s.length - 1; i++) {
-      
-      if((s[i] == 'V' || s[i] == 'F') && s[i+1] == 'V' || s[i+1] == 'F') return false;
-      
-      if((s[i] == 'v' || s[i] == '^' || s[i] == '>' || s[i] == '§') &&
-        s[i+1] == 'v' || s[i+1] == '^' || s[i+1] == '>' || s[i+1] == '§'){
-        return false;
+      switch (s[i]) {
+        case 'V':
+          if (s[i + 1] == 'V' || s[i+1] == 'F'){
+            return false;
+          }
+          break;
+
+        case 'F':
+          if (s[i + 1] == 'V' || s[i+1] == 'F'){
+            return false;
+          }
+          break;
+
+        case 'P':
+          if (s[i + 1] == 'P' ||
+              s[i + 1] == 'Q' ||
+              s[i + 1] == 'R' ||
+              s[i + 1] == 'S') {
+            return false;
+          }
+          break;
+
+        case 'Q':
+          if (s[i + 1] == 'P' ||
+              s[i + 1] == 'Q' ||
+              s[i + 1] == 'R' ||
+              s[i + 1] == 'S') {
+            return false;
+          }
+          break;
+
+        case 'R':
+          if (s[i + 1] == 'P' ||
+              s[i + 1] == 'Q' ||
+              s[i + 1] == 'R' ||
+              s[i + 1] == 'S') {
+            return false;
+          }
+          break;
+
+        case 'S':
+          if (s[i + 1] == 'P' ||
+              s[i + 1] == 'Q' ||
+              s[i + 1] == 'R' ||
+              s[i + 1] == 'S') {
+            return false;
+          }
+          break;
+
+        case '^':
+          if (s[i + 1] == '^' ||
+              s[i + 1] == 'v' ||
+              s[i + 1] == '>' ||
+              s[i + 1] == '§') {
+            return false;
+          }
+          break;
+
+        case 'v':
+          if (s[i + 1] == '^' ||
+              s[i + 1] == 'v' ||
+              s[i + 1] == '>' ||
+              s[i + 1] == '§') {
+            return false;
+          }
+          break;
+
+        case '>':
+          if (s[i + 1] == '^' ||
+              s[i + 1] == 'v' ||
+              s[i + 1] == '>' ||
+              s[i + 1] == '§') {
+            return false;
+          }
+          break;
+
+        case '§':
+          if (s[i + 1] == '^' ||
+              s[i + 1] == 'v' ||
+              s[i + 1] == '>' ||
+              s[i + 1] == '§') {
+            return false;
+          }
       }
     }
+    if (s[s.length - 1] == '^' ||
+        s[s.length - 1] == 'v' ||
+        s[s.length - 1] == '>' ||
+        s[s.length - 1] == '§' ||
+        s[s.length - 1] == '~') return false;
     return true;
   }
 
