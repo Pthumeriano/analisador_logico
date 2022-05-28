@@ -171,32 +171,18 @@ class _HomeState extends State<Home> {
 
   bool validarParentese(String s) {
     String parenteses = gerarParentese(s);
-    if ((parenteses.length.isOdd)) {
+    int n=0;
+    for(int i=0;i<parenteses.length;i++){
+     if(parenteses[i]=="("){
+      n++;
+    }else{
+      n--;
+    }
+    if(n<0){
       return false;
     }
-    if (parenteses[0] == ')' || parenteses[parenteses.length - 1] == '(') {
-      return false;
-    }
-    for (int i = 0; i < parenteses.length - 2; i++) {
-      if (parenteses[i] != parenteses[i + 1]) {
-        parenteses = removerCaractereNaPosisao(parenteses, i);
-        parenteses = removerCaractereNaPosisao(parenteses, i);
-        break;
-      }
-    }
-    for (int i = 0; i < s.length - 1; i++) {
-      if (s[i] == ')' && s[i + 1] == '(') {
-        return false;
-      }
-      if (s[i] == '(' && s[i + 1] == ')') {
-        return false;
-      }
-    }
-    if (contarCaractere(parenteses, '(') != contarCaractere(parenteses, ')')){
-      return false;
-    }
-      
-    return true;
+  }
+  return n==0;
   }
 
   String normalizar(String s){
