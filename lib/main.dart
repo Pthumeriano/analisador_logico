@@ -171,32 +171,18 @@ class _HomeState extends State<Home> {
 
   bool validarParentese(String s) {
     String parenteses = gerarParentese(s);
-    if ((parenteses.length.isOdd)) {
+    int n=0;
+    for(int i=0;i<parenteses.length;i++){
+     if(parenteses[i]=="("){
+      n++;
+    }else{
+      n--;
+    }
+    if(n<0){
       return false;
     }
-    if (parenteses[0] == ')' || parenteses[parenteses.length - 1] == '(') {
-      return false;
-    }
-    for (int i = 0; i < parenteses.length - 2; i++) {
-      if (parenteses[i] != parenteses[i + 1]) {
-        parenteses = removerCaractereNaPosisao(parenteses, i);
-        parenteses = removerCaractereNaPosisao(parenteses, i);
-        break;
-      }
-    }
-    for (int i = 0; i < s.length - 1; i++) {
-      if (s[i] == ')' && s[i + 1] == '(') {
-        return false;
-      }
-      if (s[i] == '(' && s[i + 1] == ')') {
-        return false;
-      }
-    }
-    if (contarCaractere(parenteses, '(') != contarCaractere(parenteses, ')')){
-      return false;
-    }
-      
-    return true;
+  }
+  return n==0;
   }
 
   String normalizar(String s){
@@ -495,6 +481,9 @@ List<String> getConectivosSobrando(String s){
 }
 
 String deixarEmPontoDeBala(String expressao){
+  //resolver entre parentese e adicionar resultados numa lista
+  //adicionar conectivos que sobram em uma lista
+  //concatena tudo em ordem numa string e retorna
   
   List<String> expressoesEmPontoDeBala = separador(expressao);
   List<String> conectivosEmPontoBala = getConectivosSobrando(expressao);
@@ -533,6 +522,12 @@ String deixarEmPontoDeBala(String expressao){
 }
 
 bool mandarBala(String s){
+  
+  if(s.length==5 && s.contains('^')){
+    return calcularValorLogico(calcularProposisao(s[2]),'^',calcularProposisao(s[4]));
+  }
+  
+  //resolver expressao em ordem de ocorrencia
   String expressao = deixarEmPontoDeBala(s);
   bool bala = calcularProposisao(expressao[0]);
   
@@ -701,11 +696,6 @@ bool mandarBala(String s){
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              ElevatedButton(
-                child: const Text('~'),
-                onPressed: escreverNao,
-                style: ElevatedButton.styleFrom(primary: Colors.black),
-              ),
               ElevatedButton(
                 child: const Text('('),
                 onPressed: escreverAbreParentese,
